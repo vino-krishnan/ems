@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/employee';
+const API_URL = 'https://ems-backend-production-378d.up.railway.app/api/employee';
 
 export const getprofile = async (token) => {
   return await axios.get(`${API_URL}/profile`, {
