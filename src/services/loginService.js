@@ -1,8 +1,4 @@
-// import axios from 'axios';
 
-// export const loginApi = async (credentials) => {
-//     return await axios.post('http://localhost:5000/api/auth/login', credentials);
-// };
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5000/api';
@@ -18,4 +14,12 @@ export const loginApi = async (credentials) => {
   } catch (error) {
     throw error.response?.data?.message || 'Login failed';
   }
+};
+export const logoutApi = async () => {
+    return await fetch('/auth/logout', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+    });
 };

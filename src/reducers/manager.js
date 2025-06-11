@@ -1,10 +1,10 @@
-// src/reducers/manager.js
-// import { FETCH_EMPLOYEES_SUCCESS, FETCH_EMPLOYEES_ERROR } from '../actions/manager';
 
 const initialState = {
     employees: [],
     error: null,
-    deleteEmp: null
+    deleteEmp: null,
+    profile:null,
+    loading:false
 };
 
 const managerReducer = (state = initialState, action) => {
@@ -48,6 +48,10 @@ const managerReducer = (state = initialState, action) => {
                 ...state,
                 error: action.payload
             };
+        case 'FETCH_PROFILE_SUCCESS':
+            return { ...state, profile: action.payload, loading: false };
+        case 'FETCH_PROFILE_ERROR':
+            return { ...state, error: action.payload, loading: false };
         default:
             return state;
     }

@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { Provider } from 'react-redux';
 import store from './store';
-import Counter from './components/counter';
+// import Counter from './components/counter';
 import Loginpage from './components/loginpage';
 import ManagerDashboard from './components/managerDashboard'
 import EmployeeDashboard from './components/employeeDashboard';

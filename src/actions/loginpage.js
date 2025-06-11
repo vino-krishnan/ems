@@ -1,11 +1,11 @@
-import { loginApi } from '../services/loginService';
+import { loginApi, logoutApi } from '../services/loginService';
 
 export const loginUser = (credentials) => {
     return async (dispatch) => {
         try {
             const data = await loginApi(credentials);
-            console.log(data,"actionnnnnn");
-            
+            console.log(data, "actionnnnnn");
+
             dispatch({
                 type: 'LOGIN_SUCCESS',
                 payload: {
@@ -16,7 +16,7 @@ export const loginUser = (credentials) => {
             });
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.user.role);
-            localStorage.setItem("id",data.user.id)
+            localStorage.setItem("id", data.user.id)
 
         } catch (error) {
             dispatch({
@@ -24,5 +24,15 @@ export const loginUser = (credentials) => {
                 payload: error,
             });
         }
+    };
+};
+export const logout = () => {
+    return async (dispatch) => {
+        const data = await logoutApi();
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('id');
+
+        dispatch({ type: 'LOGOUT' });
     };
 };

@@ -1,7 +1,7 @@
-// src/components/ManagerDashboard.js
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEmployees, deleteEmployee, updateEmployee, addEmployee } from '../actions/manager';
+import { fetchEmployees, deleteEmployee, updateEmployee, addEmployee, getUserProfile } from '../actions/manager';
 import {
     CircularProgress,
     Typography,
@@ -22,13 +22,19 @@ import {
     Button,
     TextField,
     Box,
-    Container
+    Container,
+    AppBar,
+    Toolbar
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
-
+import { logout } from '../actions/loginpage';
+import { useNavigate } from 'react-router-dom';
+import { getMyProfile } from '../services/managerService';
+import tableBg from './managerimage.jpg'
 const ManagerDashboard = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { employees, error } = useSelector((state) => state.manager);
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -53,11 +59,19 @@ const ManagerDashboard = () => {
         gender: '',
         date_of_joining: '',
     });
+
+    // const [profileData, setProfileData] = useState(null);
+    const [openProfileDialog, setOpenProfileDialog] = useState(false);
+
+
     useEffect(() => {
         dispatch(fetchEmployees());
     }, [dispatch]);
 
     const empDetails = employees?.employees || [];
+    const profileData = useSelector((state) => state?.manager?.profile);
+
+    console.log(profileData, "dasssssss");
 
     if (error) return <Typography color="error">Error: {error}</Typography>;
     if (!empDetails.length) return <CircularProgress />;
@@ -131,64 +145,118 @@ const ManagerDashboard = () => {
             dispatch(fetchEmployees());
         });
     };
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/');
+    };
+
+    const handleProfileClick = () => {
+        dispatch(getUserProfile());
+        setOpenProfileDialog(true);
+    };
     return (
         //   <Container maxWidth="lg" sx={{ py: 4 ,background: 'linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)',}}>
         <Container
             maxWidth={false}
             disableGutters
-            sx={{ minHeight: '100vh', width: '100%', py: 4, px: 3, background: 'linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)' }}
+            sx={{ minHeight: '100vh', width: '100%',  background: 'linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)' }}
         >
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h4" fontWeight="bold">My Employees</Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    sx={{ background: 'linear-gradient(135deg, rgb(45, 47, 58) 0%, #3f51b5 100%)', }}
+            <AppBar position="static" >
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                    <Typography variant="h6" fontWeight="bold" sx={{ color: 'black' }}>Employee Management</Typography>
+                    <Box>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                bgcolor: '#607d8b',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                mr: 2,
+                                '&:hover': { backgroundColor: '#455a64' },
+                            }}
+                            onClick={handleProfileClick}
+                        >
+                            My Profile
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                bgcolor: '#f44336',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                mr: 2,
+                                '&:hover': { backgroundColor: '#d32f2f' },
+                            }}
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            sx={{
+                                background: 'linear-gradient(135deg, rgb(45, 47, 58) 0%, #3f51b5 100%)',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                            }}
+                            onClick={() => setOpenAddDialog(true)}
+                        >
+                            Add Employee
+                        </Button>
+                    </Box>
+                </Toolbar>
+            </AppBar>
 
-                    onClick={() => setOpenAddDialog(true)}
-                >
-                    Add Employee
-                </Button>
-            </Box>
 
             <Paper elevation={3}>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Phone Number</TableCell>
-                                <TableCell>Location</TableCell>
-                                <TableCell>Blood Group</TableCell>
-                                <TableCell>Gender</TableCell>
-                                <TableCell>Date of Joining</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {empDetails.map((emp) => (
-                                <TableRow key={emp.user_id} hover>
-                                    <TableCell>{emp.user_id}</TableCell>
-                                    <TableCell>{emp.full_name}</TableCell>
-                                    <TableCell>{emp.email}</TableCell>
-                                    <TableCell>{emp.phone_number}</TableCell>
-                                    <TableCell>{emp.location}</TableCell>
-                                    <TableCell>{emp.blood_group}</TableCell>
-                                    <TableCell>{emp.gender}</TableCell>
-                                    <TableCell>{emp.date_of_joining}</TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={(e) => handleMenuClick(e, emp)}>
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    </TableCell>
+                <Box
+                    sx={{
+                        background: 'linear-gradient(135deg,rgb(210, 212, 223) 0%,rgb(174, 210, 215) 100%)' ,
+                        // backgroundImage: `url(${tableBg})`,
+                        // backgroundSize: 'cover',
+                        // backgroundPosition: 'center',
+                        // backgroundRepeat: 'no-repeat',
+                        p: 2,
+                    }}
+                >
+                    <TableContainer>
+                        <Table>
+                            <TableHead sx={{ backgroundColor: 'rgba(128,128,128, 0.8)' ,color:'white' }}>
+                                <TableRow >
+                                    <TableCell sx={{ fontWeight: 'bold',}}>ID</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Phone Number</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Location</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Blood Group</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Gender</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Date of Joining</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {empDetails.map((emp) => (
+                                    <TableRow key={emp.user_id} hover>
+                                        <TableCell>{emp.user_id}</TableCell>
+                                        <TableCell>{emp.full_name}</TableCell>
+                                        <TableCell>{emp.email}</TableCell>
+                                        <TableCell>{emp.phone_number}</TableCell>
+                                        <TableCell>{emp.location}</TableCell>
+                                        <TableCell>{emp.blood_group}</TableCell>
+                                        <TableCell>{emp.gender}</TableCell>
+                                        <TableCell>{emp.date_of_joining}</TableCell>
+                                        <TableCell>
+                                            <IconButton onClick={(e) => handleMenuClick(e, emp)}>
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
             </Paper>
 
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
@@ -197,8 +265,17 @@ const ManagerDashboard = () => {
             </Menu>
 
             {/* Update Dialog */}
-            <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="sm">
-                <DialogTitle>Update Employee</DialogTitle>
+            <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="sm" PaperProps={{
+                sx: {
+                    borderRadius: 3,
+                    boxShadow: 10,
+                },
+            }}>
+                <DialogTitle sx={{
+                    background: 'linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                }}>Update Employee</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
@@ -272,8 +349,17 @@ const ManagerDashboard = () => {
             </Dialog>
 
             {/* Add Dialog */}
-            <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} fullWidth maxWidth="sm">
-                <DialogTitle>Add New Employee</DialogTitle>
+            <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} fullWidth maxWidth="sm" PaperProps={{
+                sx: {
+                    borderRadius: 3,
+                    boxShadow: 10,
+                },
+            }}>
+                <DialogTitle sx={{
+                    background: 'linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                }}>Add New Employee</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
@@ -354,218 +440,57 @@ const ManagerDashboard = () => {
                     <Button onClick={handleAddSubmit} variant="contained" color="primary">Add</Button>
                 </DialogActions>
             </Dialog>
+
+            <Dialog
+                open={openProfileDialog}
+                onClose={() => setOpenProfileDialog(false)}
+                fullWidth
+                maxWidth="sm"
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        boxShadow: 10,
+                    },
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        background: 'linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                    }}
+                >
+                    My Profile
+                </DialogTitle>
+                <DialogContent sx={{ backgroundColor: '#f5f5f5', py: 2 }}>
+                    {profileData ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <Typography><strong>ID:</strong> {profileData.user_id}</Typography>
+                            <Typography><strong>Name:</strong> {profileData.full_name}</Typography>
+                            <Typography><strong>Email:</strong> {profileData.email}</Typography>
+                            <Typography><strong>Phone:</strong> {profileData.phone_number}</Typography>
+                            <Typography><strong>Location:</strong> {profileData.location}</Typography>
+                            <Typography><strong>Team name:</strong> {profileData.team_name}</Typography>
+                            <Typography><strong>department:</strong> {profileData.department}</Typography>
+                            <Typography><strong>Date of Joining:</strong> {profileData.date_of_joining}</Typography>
+                        </Box>
+                    ) : (
+                        <Typography>Loading...</Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenProfileDialog(false)} variant="contained" color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
         </Container>
+
     );
 
-    // return (
-    //     <div style={{ padding: '20px' }}>
-    //         <Typography variant="h4" gutterBottom>My Employees</Typography>
-    //         <Button
-    //             variant="contained"
-    //             color="primary"
-    //             startIcon={<AddIcon />}
-    //             onClick={() => setOpenAddDialog(true)}
-    //             style={{ marginBottom: '20px' }}
-    //         >
-    //             Add Employee
-    //         </Button>
-    //         <TableContainer component={Paper}>
-    //             <Table>
-    //                 <TableHead>
-    //                     <TableRow>
-    //                         <TableCell><strong>ID</strong></TableCell>
-    //                         <TableCell><strong>Full Name</strong></TableCell>
-    //                         <TableCell><strong>Email</strong></TableCell>
-    //                         <TableCell><strong>Phone Number</strong></TableCell>
 
-    //                         <TableCell><strong>Location</strong></TableCell>
-    //                         <TableCell><strong>Blood Group</strong></TableCell>
-    //                         <TableCell><strong>Gender</strong></TableCell>
-    //                         <TableCell><strong>Date of joining</strong></TableCell>
-    //                         <TableCell><strong>Action</strong></TableCell>
-    //                     </TableRow>
-    //                 </TableHead>
-    //                 <TableBody>
-    //                     {empDetails.map((emp) => (
-    //                         <TableRow key={emp.id}>
-    //                             <TableCell>{emp.user_id}</TableCell>
-    //                             <TableCell>{emp.full_name}</TableCell>
-    //                             <TableCell>{emp.email}</TableCell>
-    //                             <TableCell>{emp.phone_number}</TableCell>
-
-    //                             <TableCell>{emp.location}</TableCell>
-    //                             <TableCell>{emp.blood_group}</TableCell>
-    //                             <TableCell>{emp.gender}</TableCell>
-    //                             <TableCell>{emp.date_of_joining}</TableCell>
-    //                             <TableCell>
-    //                                 <IconButton onClick={(e) => handleMenuClick(e, emp)}>
-    //                                     <MoreVertIcon />
-    //                                 </IconButton>
-    //                             </TableCell>
-    //                         </TableRow>
-    //                     ))}
-    //                 </TableBody>
-    //             </Table>
-    //             <Menu
-    //                 anchorEl={anchorEl}
-    //                 open={Boolean(anchorEl)}
-    //                 onClose={handleMenuClose}
-    //             >
-    //                 <MenuItem onClick={handleUpdate}>Update</MenuItem>
-    //                 <MenuItem onClick={handleDelete}>Delete</MenuItem>
-    //             </Menu>
-    //         </TableContainer>
-
-    //         {/* update  */}
-    //         <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="sm">
-    //             <DialogTitle>Update Employee</DialogTitle>
-    //             <DialogContent>
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Full Name"
-    //                     name="full_name"
-    //                     value={updatedEmployee.full_name}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Email"
-    //                     name="email"
-    //                     value={updatedEmployee.email}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Phone Number"
-    //                     name="phone_number"
-    //                     value={updatedEmployee.phone_number}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Location"
-    //                     name="location"
-    //                     value={updatedEmployee.location}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Blood Group"
-    //                     name="blood_group"
-    //                     value={updatedEmployee.blood_group}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Gender"
-    //                     name="gender"
-    //                     value={updatedEmployee.gender}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Date of Joining"
-    //                     name="date_of_joining"
-    //                     type="date"
-    //                     value={updatedEmployee.date_of_joining}
-    //                     onChange={handleInputChange}
-    //                     fullWidth
-    //                     InputLabelProps={{
-    //                         shrink: true,
-    //                     }}
-    //                 />
-    //             </DialogContent>
-    //             <DialogActions>
-    //                 <Button onClick={() => setOpenUpdateDialog(false)} color="secondary">Cancel</Button>
-    //                 <Button onClick={handleUpdateSubmit} color="primary" variant="contained">Update</Button>
-    //             </DialogActions>
-    //         </Dialog>
-
-    //         {/* add */}
-    //         <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} fullWidth maxWidth="sm">
-    //             <DialogTitle>Add New Employee</DialogTitle>
-    //             <DialogContent>
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="User ID"
-    //                     name="user_id"
-    //                     value={newEmployee.user_id}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Full Name"
-    //                     name="full_name"
-    //                     value={newEmployee.full_name}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Email"
-    //                     name="email"
-    //                     value={newEmployee.email}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Phone Number"
-    //                     name="phone_number"
-    //                     value={newEmployee.phone_number}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Location"
-    //                     name="location"
-    //                     value={newEmployee.location}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Blood Group"
-    //                     name="blood_group"
-    //                     value={newEmployee.blood_group}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Gender"
-    //                     name="gender"
-    //                     value={newEmployee.gender}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                 />
-    //                 <TextField
-    //                     margin="dense"
-    //                     label="Date of Joining"
-    //                     name="date_of_joining"
-    //                     type="date"
-    //                     value={newEmployee.date_of_joining}
-    //                     onChange={handleAddInputChange}
-    //                     fullWidth
-    //                     InputLabelProps={{ shrink: true }}
-    //                 />
-    //             </DialogContent>
-    //             <DialogActions>
-    //                 <Button onClick={() => setOpenAddDialog(false)} color="secondary">Cancel</Button>
-    //                 <Button onClick={handleAddSubmit} color="primary" variant="contained">Add</Button>
-    //             </DialogActions>
-    //         </Dialog>
-
-    //     </div>
-    // );
 };
 
 export default ManagerDashboard;

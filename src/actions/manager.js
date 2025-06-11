@@ -1,6 +1,6 @@
-// src/actions/manager.js
-import axios from 'axios';
-import { addNewEmployee, deleteEmployeeApi, getEmployees, updateEmployeeById } from '../services/managerService';
+
+
+import { addNewEmployee, deleteEmployeeApi, getEmployees, getMyProfile, updateEmployeeById } from '../services/managerService';
 
 
 
@@ -39,18 +39,6 @@ export const updateEmployee = (id, employeeData) => async (dispatch) => {
     }
 };
 
-// export const addEmployee = (employeeData) => async (dispatch) => {
-
-//     try {
-//         const token = localStorage.getItem('token');
-//          const id = localStorage.getItem('id');
-//         console.log(employeeData);
-//         const response = await addNewEmployee(employeeData, token);
-//         dispatch({ type: 'ADD_EMPLOYEE_SUCCESS', payload: response.data });
-//     } catch (error) {
-//         dispatch({ type: 'ADD_EMPLOYEE_FAIL', payload: error.message });
-//     }
-// };
 
 export const addEmployee = (employeeData) => async (dispatch) => {
     try {
@@ -70,4 +58,24 @@ export const addEmployee = (employeeData) => async (dispatch) => {
     } catch (error) {
         dispatch({ type: 'ADD_EMPLOYEE_FAIL', payload: error.message });
     }
+};
+
+
+export const getUserProfile = () => {
+    return async (dispatch) => {
+        try {
+            const token = localStorage.getItem('token');
+            const profileData = await getMyProfile(token);
+            let data = profileData?.managerDetail
+            console.log(data);
+            
+            dispatch({
+                type: 'FETCH_PROFILE_SUCCESS',
+                payload: data,
+            });
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            dispatch({ type: 'FETCH_PROFILE_ERROR', payload: error.message });
+        }
+    };
 };

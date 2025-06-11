@@ -1,7 +1,5 @@
 import { getManagerInfo, getprofile } from '../services/employeeService';
 
-// export const FETCH_MANAGER_INFO_SUCCESS = 'FETCH_MANAGER_INFO_SUCCESS';
-// export const FETCH_MANAGER_INFO_FAILURE = 'FETCH_MANAGER_INFO_FAILURE';
 
 export const fetchProfile = () => async (dispatch) => {
   try {
@@ -19,10 +17,6 @@ export const fetchProfile = () => async (dispatch) => {
   }
 };
 
-// export const FETCH_MANAGER_SUCCESS = 'FETCH_MANAGER_SUCCESS';
-// export const FETCH_MANAGER_FAILURE = 'FETCH_MANAGER_FAILURE';
-
-// import { getManagerInfo } from '../services/employeeService';
 
 export const fetchManager = () => async (dispatch) => {
   try {

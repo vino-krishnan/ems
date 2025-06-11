@@ -1,7 +1,7 @@
-// src/services/managerService.js
+
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // change to your backend URL
+const API_BASE_URL = 'http://localhost:5000/api'; 
 
 export const getEmployees = async (token) => {
     return await axios.get(`${API_BASE_URL}/manager/employees`, {
@@ -34,3 +34,13 @@ export const addNewEmployee = async ( data, token) => {
         }
     });
 }
+
+
+export const getMyProfile = async (token) => {
+    const response = await axios.get(`${API_BASE_URL}/manager/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    console.log(response.data);
+    
+    return response.data;
+};
