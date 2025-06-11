@@ -1,24 +1,23 @@
 import logo from './logo.svg';
 import './App.css';
+import { Provider } from 'react-redux';
+import store from './store';
+import Counter from './components/counter';
+import Loginpage from './components/loginpage';
+import ManagerDashboard from './components/managerDashboard'
+import EmployeeDashboard from './components/employeeDashboard';
+import { Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      {/* <Counter /> */}
+        <Routes>
+        <Route path="/" element={<Loginpage />} />
+        <Route path="/manager-dashboard" element={<ManagerDashboard />} />
+        <Route path="/employee-dashboard" element={<EmployeeDashboard  />} />
+      </Routes>
+    </Provider>
   );
 }
 
